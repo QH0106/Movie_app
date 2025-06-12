@@ -1,0 +1,151 @@
+import React, { useState } from 'react';
+import { GoogleLogin } from '@react-oauth/google';
+import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import './css/Login.css';
+
+const Login = () => {
+    const navigate = useNavigate();
+    const [message, setMessage] = useState('');
+
+    const [formData, setFormData] = useState({
+      username: "",
+      password: "",
+      showPassword: false,
+    });
+  
+    const handleChange = (e) => {
+      setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+  
+    const togglePassword = () => {
+      setFormData((prev) => ({ ...prev, showPassword: !prev.showPassword }));
+    };
+  
+    const handleLogin = async (e) => {
+      e.preventDefault();
+      const { username, password } = formData;
+  
+      if (!username || !password) {
+        setMessage("Tên người dùng và mật khẩu không được để trống!");
+        return;
+      }
+  
+    // kiểm tra định dạng mật khẩu
+      const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/;
+      if (!passwordRegex.test(password)) {
+        setMessage("Mật khẩu phải có ít nhất 8 ký tự, 1 chữ in hoa và 1 ký tự đặc biệt!");
+        return;
+      }
+
+    if (username === "test" && password === "Test@123") {
+      const mockUser = { name: "Test User", email: "test@example.com" };
+      localStorage.setItem('user', JSON.stringify(mockUser));
+      alert("Đăng nhập thành công!");
+      navigate('/'); 
+    } else {
+      setMessage("Sai tên người dùng hoặc mật khẩu!");
+    }
+    };
+
+    const handleSuccess = async (credentialResponse) => {
+        try {
+            // Gửi token đến backend của bạn để xác thực
+            // Thay thế 'YOUR_BACKEND_URL/auth/google' bằng URL backend thực tế của bạn
+            const response = await fetch('YOUR_BACKEND_URL/auth/google', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    credential: credentialResponse.credential,
+                }),
+            });
+
+            const data = await response.json();
+            localStorage.setItem('user', JSON.stringify(data));
+            navigate('/');
+        } catch (error) {
+            console.error('Lỗi đăng nhập Google:', error);
+            setMessage("Đăng nhập Google thất bại!");
+        }
+    };
+
+    const handleError = () => {
+        console.log('Đăng nhập Google thất bại');
+        setMessage("Đăng nhập Google thất bại!");
+    };
+
+    return (
+        <div className="login-container">
+            <div className="backgroundLogin"></div>
+                <div className="form-login">
+                    <h2>Login</h2>
+
+                    <form onSubmit={handleLogin}>
+                    <div className="group">
+                        <label htmlFor="username">Tên</label>
+                        <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        placeholder="Nhập username"
+                        value={formData.username}
+                        onChange={handleChange}
+                        autoComplete="off"
+                        />
+                    </div>
+
+                    <div className="group">
+                        <label htmlFor="password">Mật khẩu</label>
+                        <div className="password-container">
+                        <input
+                            type={formData.showPassword ? "text" : "password"}
+                            id="password"
+                            name="password"
+                            placeholder="Nhập mật khẩu"
+                            value={formData.password}
+                            onChange={handleChange}
+                            autoComplete="off"
+                        />
+                        <FontAwesomeIcon
+                            icon={formData.showPassword ? faEye : faEyeSlash}
+                            onClick={togglePassword}
+                            aria-label="Hiển thị / Ẩn mật khẩu"
+                            tabIndex={0}
+                        />
+                        </div>
+                    </div>
+
+                    {message && <p className="message" style={{ color: 'red' }}>{message}</p>}
+
+                    <div className="forgot-password">
+                        <a href="/Forgotpassword">Quên mật khẩu?</a>
+                    </div>
+
+                    <button type="submit" className="login">Đăng nhập</button>
+
+                    <p className="text">Hoặc tiếp tục với</p>
+
+                    <div className="icon-social">
+                        <div className="link-social">
+                            <GoogleLogin
+                                onSuccess={handleSuccess}
+                                onError={handleError}
+                                useOneTap
+                            />
+                        </div>
+                    </div>
+
+                    <div className="register">
+                        Bạn chưa có tài khoản? <a href="/Register">Đăng ký ngay</a>
+                    </div>
+                    </form>
+                </div>
+           
+        </div>
+    );
+};
+
+export default Login; 

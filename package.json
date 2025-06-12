@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "name": "movie-app",
   "version": "0.1.0",
   "private": true,
@@ -41,5 +42,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+=======
+  "dependencies": {
+    "aos": "^2.3.4"
+>>>>>>> f4e4c83a2b098bef7dca5b372c9e2942308fc021
   }
 }

@@ -1,0 +1,22 @@
+.movieDetail{
+    display: block;
+}
+
+#detail{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.movie-banner {
+    height: 550px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+  
+.movie-banner .overlay {
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.6), #121212 90%);
+    padding: 40px 0;
+}
