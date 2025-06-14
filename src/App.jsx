@@ -6,6 +6,7 @@ import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import MovieDetail from "./pages/MovieDetail";
 import Login from "./components/Login";
+import Register from 'components/Register';
 import SplashCursor from "./components/SplashCursor/SplashCursor";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
@@ -27,9 +28,11 @@ const AppContent = () => {
     <Router>
       <SplashCursor />
       <Routes>
+        <Route path="/Register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<Navbar />}>
           <Route index element={<Home />} />
+          <Route path="/Home" element={<Home />} />
           <Route path="movie/:id" element={<MovieDetail />} />
         </Route>
       </Routes>

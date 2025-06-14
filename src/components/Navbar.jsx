@@ -194,7 +194,17 @@ const Navbar = () => {
                                     className="d-flex align-items-center"
                                     type="button"
                                     style={{
-                                        cursor: "pointer"
+                                        background: "transparent",
+                                        border: "1px solid #e3d6d6",
+                                        borderRadius: "5px",
+                                        color: "white",
+                                        cursor: "pointer",
+                                        padding: "5px 10px",
+                                        transition: "all 0.3s ease",
+                                        whiteSpace: "nowrap",
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+                                        maxWidth: "200px"
                                     }}
                                     onClick={handleLogout}
                                 >

@@ -32,18 +32,26 @@ const Login = () => {
         return;
       }
   
-    // kiểm tra định dạng mật khẩu
+    // kiểm tra mật khẩu
       const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/;
       if (!passwordRegex.test(password)) {
         setMessage("Mật khẩu phải có ít nhất 8 ký tự, 1 chữ in hoa và 1 ký tự đặc biệt!");
         return;
       }
 
-    if (username === "test" && password === "Test@123") {
-      const mockUser = { name: "Test User", email: "test@example.com" };
+    // kiểm tra có tài khoản trong local
+    const RegisterUser = JSON.parse(localStorage.getItem('registeredUser'));
+
+    if (RegisterUser && RegisterUser.username === username && RegisterUser.password === password) {
+      const mockUser = { name: username, email: `${username}@example.com` }; 
       localStorage.setItem('user', JSON.stringify(mockUser));
       alert("Đăng nhập thành công!");
-      navigate('/'); 
+      navigate('/Home'); 
+    } else if (username === "huylq" && password === "Huylq008@") {
+      const mockUser = { name: "Huy", email: "huylq@gmail.com.com" };
+      localStorage.setItem('user', JSON.stringify(mockUser));
+      alert("Đăng nhập thành công!");
+      navigate('/Home'); 
     } else {
       setMessage("Sai tên người dùng hoặc mật khẩu!");
     }
@@ -51,24 +59,63 @@ const Login = () => {
 
     const handleSuccess = async (credentialResponse) => {
         try {
-            // Gửi token đến backend của bạn để xác thực
-            // Thay thế 'YOUR_BACKEND_URL/auth/google' bằng URL backend thực tế của bạn
-            const response = await fetch('YOUR_BACKEND_URL/auth/google', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    credential: credentialResponse.credential,
-                }),
-            });
+            // Gửi token đến backend của bạn để xác thực (đã comment vì làm demo FE)
+            // const response = await fetch(`${config.BACKEND_URL}/auth/google`, {
+            //     method: 'POST',
+            //     headers: {
+            //         'Content-Type': 'application/json',
+            //     },
+            //     body: JSON.stringify({
+            //         credential: credentialResponse.credential,
+            //     }),
+            // });
+            // Mock successful login response
+            
+            // thông tin người dùng từ thông tin đăng nhập
+            const base64Url = credentialResponse.credential.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            const decodedToken = JSON.parse(jsonPayload);
+            
+            // Dữ liệu người dùng giả lập với thông tin thực tế
+            const mockUserData = {
+                name: decodedToken.name,
+                email: decodedToken.email,
+                picture: decodedToken.picture,
+                isGoogleUser: true
+            };
 
-            const data = await response.json();
-            localStorage.setItem('user', JSON.stringify(data));
-            navigate('/');
+            // Kiểm tra trạng thái phản hồi của server (đã comment)
+            // if (!response.ok) {
+            //     const errorText = await response.text();
+            //     console.error('Server response:', errorText);
+            //     throw new Error(`HTTP error! status: ${response.status}`);
+            // }
+
+            // // Kiểm tra content type
+            // const contentType = response.headers.get("content-type");
+            // if (!contentType || !contentType.includes("application/json")) {
+            //     const text = await response.text();
+            //     console.error('Unexpected response type:', contentType);
+            //     console.error('Response content:', text);
+            //     throw new TypeError("Response was not JSON");
+            // }
+
+            // const data = await response.json();
+            // localStorage.setItem('user', JSON.stringify(data));
+            // Store user data in localStorage
+            localStorage.setItem('user', JSON.stringify(mockUserData));
+            
+            // Hiển thị thông báo thành công
+            alert("Đăng nhập Google thành công!");
+            
+            // Chuyển hướng đến trang chủ
+            navigate('/Home');
         } catch (error) {
             console.error('Lỗi đăng nhập Google:', error);
-            setMessage("Đăng nhập Google thất bại!");
+            setMessage("Đăng nhập Google thất bại! Vui lòng thử lại sau.");
         }
     };
 
