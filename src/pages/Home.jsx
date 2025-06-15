@@ -21,12 +21,6 @@ const Home = () => {
   const [genres, setGenres] = useState([]);
   const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
 
-  const scrollRefs = {
-    newMovies: useRef(null),
-    nowPlaying: useRef(null),
-    topRated: useRef(null)
-  };
-
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
@@ -58,17 +52,7 @@ const Home = () => {
     fetchInitialData();
   }, []);
 
-  const handleScroll = (direction, ref) => {
-    if (ref.current) {
-      const scrollAmount = 300;
-      ref.current.scrollBy({
-        left: direction === 'left' ? -scrollAmount : scrollAmount,
-        behavior: 'smooth'
-      });
-    }
-  };
-
-  const renderMovieCategory = (title, movies, ref, viewAllLink) => (
+  const renderMovieCategory = (title, movies, viewAllLink) => (
     <div className="movie-category">
       <div className="category-header">
         <h2 className="category-title">{title}</h2>
@@ -78,28 +62,15 @@ const Home = () => {
           </Link>
         )}
       </div>
-      <div className="horizontal-movie-list">
-        <button 
-          className="scroll-button scroll-left"
-          onClick={() => handleScroll('left', ref)}
-        >
-          ‹
-        </button>
-        <div className="movie-scroll" ref={ref}>
-          {movies.map((movie) => (
+      <div className="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-3">
+        {movies.map((movie) => (
+          <div key={movie.id} className="col">
             <MovieCard 
-              key={movie.id} 
               movie={movie} 
               IMAGE_BASE_URL={IMAGE_BASE_URL}
             />
-          ))}
-        </div>
-        <button 
-          className="scroll-button scroll-right"
-          onClick={() => handleScroll('right', ref)}
-        >
-          ›
-        </button>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -147,9 +118,9 @@ const Home = () => {
       </div>
     
       {/* Movie Categories */}
-      {renderMovieCategory("Phim mới cập nhật", newMovies, scrollRefs.newMovies, "/movies/new")}
-      {renderMovieCategory("Phim đang chiếu", nowPlaying, scrollRefs.nowPlaying, "/movies/now-playing")}
-      {renderMovieCategory("Top đánh giá cao", topRated, scrollRefs.topRated, "/movies/top-rated")}
+      {renderMovieCategory("Phim mới cập nhật", newMovies, "/movies/new")}
+      {renderMovieCategory("Phim đang chiếu", nowPlaying, "/movies/now-playing")}
+      {renderMovieCategory("Top đánh giá cao", topRated, "/movies/top-rated")}
 
       {/* Genre Categories */}
       {genres.slice(0, 4).map(genre => (
@@ -160,25 +131,21 @@ const Home = () => {
               Xem tất cả
             </Link>
           </div>
-          <div className="movie-grid">
+          <div className="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-3">
             {newMovies
               .filter(movie => movie.genre_ids.includes(genre.id))
               .slice(0, 4)
               .map(movie => (
-                <MovieCard 
-                  key={movie.id} 
-                  movie={movie} 
-                  IMAGE_BASE_URL={IMAGE_BASE_URL}
-                />
+                <div key={movie.id} className="col">
+                  <MovieCard 
+                    movie={movie} 
+                    IMAGE_BASE_URL={IMAGE_BASE_URL}
+                  />
+                </div>
               ))}
           </div>
         </div>
       ))}
-
-      {/* Load More Button - REMOVED */}
-      {/* <button className="load-more" onClick={handleLoadMore}>
-        Tải thêm
-      </button> */}
     </div>
   );
 };
