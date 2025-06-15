@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import movieAPI from '../services/movieAPI';
+import Comments from '../components/Comments';
 import './css/MovieDetail.css';
 
 const MovieDetail = () => {
@@ -84,6 +85,13 @@ const MovieDetail = () => {
           <div className="col-md-8">
             <h3>Nội dung phim</h3>
             <p>{movie.overview}</p>
+          </div>
+        </div>
+
+        {/* Comments */}
+        <div className="row mt-4">
+          <div className="col-md-8">
+            <Comments movieId={id} />
           </div>
         </div>
       </div>

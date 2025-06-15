@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";  
 import movieAPI from "../services/movieAPI";
@@ -9,13 +9,28 @@ const Navbar = () => {
     const [suggestions, setSuggestions] = useState([]);
     const [search, setSearch] = useState("");
     const [user, setUser] = useState(null);
+    const [genres, setGenres] = useState([]);
     const searchRef = useRef(null);
+    const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
             setUser(JSON.parse(storedUser));
         }
+    }, []);
+
+    useEffect(() => {
+        const fetchGenres = async () => {
+            try {
+                const genresData = await movieAPI.getGenres();
+                setGenres(genresData);
+            } catch (error) {
+                console.error("Lỗi khi tải thể loại:", error);
+            }
+        };
+        fetchGenres();
     }, []);
 
     useEffect(() => {
@@ -57,6 +72,10 @@ const Navbar = () => {
     const handleLogout = () => {
         localStorage.removeItem('user');
         setUser(null);
+    };
+
+    const handleGenreClick = (genreId) => {
+        navigate(`/genre/${genreId}`, { state: { forceRefresh: true } });
     };
 
     return (
@@ -103,24 +122,27 @@ const Navbar = () => {
                                 <button 
                                     className="nav-link dropdown-toggle" 
                                     type="button"
-                                    data-bs-toggle="dropdown" 
-                                    aria-expanded="false"
                                 >
                                     Thể Loại
                                 </button>
                                 <ul className="dropdown-menu" aria-labelledby="Dropdown">
-                                    <li><a className="dropdown-item" href="/">Hành Động</a></li>
-                                    <li><a className="dropdown-item" href="/">Tình Cảm</a></li>
-                                    <li><a className="dropdown-item" href="/">Hài Hước</a></li>
-                                    <li><a className="dropdown-item" href="/">Cổ Trang</a></li>
+                                    {genres.map((genre) => (
+                                        <li key={genre.id}>
+                                            <button 
+                                                className="dropdown-item" 
+                                                onClick={() => handleGenreClick(genre.id)}
+                                                style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none' }}
+                                            >
+                                                {genre.name}
+                                            </button>
+                                        </li>
+                                    ))}
                                 </ul>
                             </li>
                             <li className="nav-item dropdown">
                                 <button 
                                     className="nav-link dropdown-toggle" 
                                     type="button"
-                                    data-bs-toggle="dropdown" 
-                                    aria-expanded="false"
                                 >
                                     Năm Phát Hành
                                 </button>

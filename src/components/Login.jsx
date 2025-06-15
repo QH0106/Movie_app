@@ -59,7 +59,7 @@ const Login = () => {
 
     const handleSuccess = async (credentialResponse) => {
         try {
-            // Gửi token đến backend của bạn để xác thực (đã comment vì làm demo FE)
+            // Gửi token đến backend của bạn để xác thực 
             // const response = await fetch(`${config.BACKEND_URL}/auth/google`, {
             //     method: 'POST',
             //     headers: {
@@ -87,7 +87,7 @@ const Login = () => {
                 isGoogleUser: true
             };
 
-            // Kiểm tra trạng thái phản hồi của server (đã comment)
+            // Kiểm tra trạng thái phản hồi của server 
             // if (!response.ok) {
             //     const errorText = await response.text();
             //     console.error('Server response:', errorText);

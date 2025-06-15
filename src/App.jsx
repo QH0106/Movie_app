@@ -5,9 +5,11 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import MovieDetail from "./pages/MovieDetail";
+import GenreMovies from "./pages/GenreMovies";
 import Login from "./components/Login";
 import Register from 'components/Register';
 import SplashCursor from "./components/SplashCursor/SplashCursor";
+import Footer from './components/Footer';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import AOS from 'aos';
@@ -34,8 +36,10 @@ const AppContent = () => {
           <Route index element={<Home />} />
           <Route path="/Home" element={<Home />} />
           <Route path="movie/:id" element={<MovieDetail />} />
+          <Route path="genre/:genreId" element={<GenreMovies />} />
         </Route>
       </Routes>
+      <Footer />
     </Router>
   );
 };

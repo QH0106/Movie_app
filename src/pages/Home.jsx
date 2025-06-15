@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import { Link } from "react-router-dom";
 import movieAPI from "../services/movieAPI";
 import MovieCard from "../components/MovieCard";
 import "./css/Home.css";
@@ -13,87 +14,171 @@ const chunkArray = (arr, size) => {
 };
 
 const Home = () => {
-  const [movies, setMovies] = useState([]);
-  const [page, setPage] = useState(1);
+  const [featuredMovies, setFeaturedMovies] = useState([]);
+  const [newMovies, setNewMovies] = useState([]);
+  const [nowPlaying, setNowPlaying] = useState([]);
+  const [topRated, setTopRated] = useState([]);
+  const [genres, setGenres] = useState([]);
   const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
 
-  useEffect(() => {
-    const fetchMovies = async () => {
-      try {
-        // Tải nhiều phim hơn nếu cần cho carousel nhiều slide
-        const response = await movieAPI.getPopularMovies(page);
-        setMovies((prevMovies) => {
-          const existingIds = new Set(prevMovies.map(movie => movie.id));
-          const newMovies = response.results.filter(movie => !existingIds.has(movie.id));
-          return [...prevMovies, ...newMovies];
-        });
-      } catch (error) {
-        console.error("Lỗi khi tải phim:", error);
-      }
-    };
-    fetchMovies();
-  }, [page]);
-
-  const handleLoadMore = () => {
-    setPage((prevPage) => prevPage + 1);
+  const scrollRefs = {
+    newMovies: useRef(null),
+    nowPlaying: useRef(null),
+    topRated: useRef(null)
   };
 
-  // Group movies for carousel slides , limit to first 12 movies
-  const moviesForCarousel = movies.slice(0, 12);
-  const chunkedMovies = chunkArray(moviesForCarousel, 4);
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      try {
+        // Fetch featured movies (top rated)
+        const featuredResponse = await movieAPI.getTopRatedMovies();
+        setFeaturedMovies(featuredResponse.results.slice(0, 3));
 
-  return (
-    <div id="home" className="container-fluid justify-content-center align-items-center">
-      {movies.length > 0 && (
-        <div id="myCarousel" class="carousel slide mx-auto" data-bs-ride="carousel" style={{marginBottom:"50px", maxWidth: "960px"}}> {/* Increased max-width for 4 items */}
-          {/* <!-- Indicators/dots --> */}
-          <div class="carousel-indicators">
-            {chunkedMovies.map((_, index) => (
-              <button
-                key={index}
-                type="button"
-                data-bs-target="#myCarousel"
-                data-bs-slide-to={index}
-                className={index === 0 ? "active" : ""}
-              ></button>
-            ))}
-          </div>
+        // Fetch new movies
+        const newMoviesResponse = await movieAPI.getPopularMovies();
+        setNewMovies(newMoviesResponse.results.slice(0, 5));
 
-          {/* <!-- Slides --> */}
-          <div class="carousel-inner">
-            {chunkedMovies.map((movieGroup, index) => (
-              <div key={index} className={`carousel-item ${index === 0 ? "active" : ""}`}>
-                <div className="d-flex justify-content-around align-items-center carousel-movie-row">
-                  {movieGroup.map((movie) => (
-                    <MovieCard key={movie.id} movie={movie} className="carousel-movie-card" IMAGE_BASE_URL={IMAGE_BASE_URL} />
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
+        // Fetch now playing movies
+        const nowPlayingResponse = await movieAPI.getNowPlayingMovies();
+        setNowPlaying(nowPlayingResponse.results.slice(0, 5));
 
-          {/* <!-- Controls: Prev/Next --> */}
-          <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon"></span>
-          </button>
-          <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next">
-            <span class="carousel-control-next-icon"></span>
-          </button>
-        </div>
-      )}
+        // Fetch top rated movies
+        const topRatedResponse = await movieAPI.getTopRatedMovies();
+        setTopRated(topRatedResponse.results.slice(0, 5));
 
-      <div id="card" className="row row-cols-3 justify-content-center align-items-center" >
-        {movies.map((movie) => (
-          <div key={movie.id} id="col" className="col" data-aos="fade-up">
-            <MovieCard movie={movie} IMAGE_BASE_URL={IMAGE_BASE_URL} />
-          </div>
-        ))}
+        // Fetch genres
+        const genresResponse = await movieAPI.getGenres();
+        setGenres(genresResponse);
+        
+      } catch (error) {
+        console.error("Lỗi khi tải dữ liệu:", error);
+      }
+    };
+
+    fetchInitialData();
+  }, []);
+
+  const handleScroll = (direction, ref) => {
+    if (ref.current) {
+      const scrollAmount = 300;
+      ref.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  const renderMovieCategory = (title, movies, ref, viewAllLink) => (
+    <div className="movie-category">
+      <div className="category-header">
+        <h2 className="category-title">{title}</h2>
+        {viewAllLink && (
+          <Link to={viewAllLink} className="view-all">
+            Xem tất cả
+          </Link>
+        )}
       </div>
-      <div className="d-flex justify-content-center py-4">
-        <button onClick={handleLoadMore} id="btn">
-          Tải thêm
+      <div className="horizontal-movie-list">
+        <button 
+          className="scroll-button scroll-left"
+          onClick={() => handleScroll('left', ref)}
+        >
+          ‹
+        </button>
+        <div className="movie-scroll" ref={ref}>
+          {movies.map((movie) => (
+            <MovieCard 
+              key={movie.id} 
+              movie={movie} 
+              IMAGE_BASE_URL={IMAGE_BASE_URL}
+            />
+          ))}
+        </div>
+        <button 
+          className="scroll-button scroll-right"
+          onClick={() => handleScroll('right', ref)}
+        >
+          ›
         </button>
       </div>
+    </div>
+  );
+
+  return (
+    <div className="home-page">
+      {/* Featured Slider */}
+      <div id="featuredCarousel" className="carousel slide featured-slider" data-bs-ride="carousel">
+        <div className="carousel-indicators">
+          {featuredMovies.map((_, index) => (
+            <button
+              key={index}
+              type="button"
+              data-bs-target="#featuredCarousel"
+              data-bs-slide-to={index}
+              className={index === 0 ? "active" : ""}
+              aria-label={`Slide ${index + 1}`}
+            />
+          ))}
+        </div>
+        <div className="carousel-inner">
+          {featuredMovies.map((movie, index) => (
+            <div key={movie.id} className={`carousel-item ${index === 0 ? "active" : ""}`}>
+              <img
+                src={`${IMAGE_BASE_URL}${movie.backdrop_path}`}
+                className="d-block w-100"
+                alt={movie.title}
+              />
+              <div className="carousel-caption">
+                <h3>{movie.title}</h3>
+                <p>{movie.overview}</p>
+                <Link to={`/movie/${movie.id}`} className="btn btn-primary">
+                  Xem chi tiết
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
+        <button className="carousel-control-prev" type="button" data-bs-target="#featuredCarousel" data-bs-slide="prev">
+          <span className="carousel-control-prev-icon" aria-hidden="true" />
+        </button>
+        <button className="carousel-control-next" type="button" data-bs-target="#featuredCarousel" data-bs-slide="next">
+          <span className="carousel-control-next-icon" aria-hidden="true" />
+        </button>
+      </div>
+    
+      {/* Movie Categories */}
+      {renderMovieCategory("Phim mới cập nhật", newMovies, scrollRefs.newMovies, "/movies/new")}
+      {renderMovieCategory("Phim đang chiếu", nowPlaying, scrollRefs.nowPlaying, "/movies/now-playing")}
+      {renderMovieCategory("Top đánh giá cao", topRated, scrollRefs.topRated, "/movies/top-rated")}
+
+      {/* Genre Categories */}
+      {genres.slice(0, 4).map(genre => (
+        <div key={genre.id} className="movie-category">
+          <div className="category-header">
+            <h2 className="category-title">Phim {genre.name}</h2>
+            <Link to={`/genre/${genre.id}`} className="view-all">
+              Xem tất cả
+            </Link>
+          </div>
+          <div className="movie-grid">
+            {newMovies
+              .filter(movie => movie.genre_ids.includes(genre.id))
+              .slice(0, 4)
+              .map(movie => (
+                <MovieCard 
+                  key={movie.id} 
+                  movie={movie} 
+                  IMAGE_BASE_URL={IMAGE_BASE_URL}
+                />
+              ))}
+          </div>
+        </div>
+      ))}
+
+      {/* Load More Button - REMOVED */}
+      {/* <button className="load-more" onClick={handleLoadMore}>
+        Tải thêm
+      </button> */}
     </div>
   );
 };
