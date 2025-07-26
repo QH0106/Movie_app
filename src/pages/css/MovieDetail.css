@@ -20,3 +20,46 @@
     background: linear-gradient(to bottom, rgba(0,0,0,0.6), #121212 90%);
     padding: 40px 0;
 }
+
+/* Modal styles */
+.modal-content {
+  border: none;
+  border-radius: 12px;
+}
+
+.modal-header {
+  border-bottom: 1px solid #333;
+  padding: 1rem 1.5rem;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+/* Watch Movie Modal */
+.modal-xl {
+  max-width: 90%;
+}
+
+.modal-xl .modal-content {
+  min-height: 80vh;
+}
+
+.modal-xl .modal-body {
+  padding: 0;
+  overflow-y: auto;
+  max-height: 70vh;
+}
+
+/* Button hover effects */
+.btn-danger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(13, 110, 253, 0.4);
+  transition: all 0.3s ease;
+}
