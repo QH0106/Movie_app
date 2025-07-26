@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import movieAPI from '../services/movieAPI';
 import Comments from '../components/Comments';
+import Breadscrumb from '../components/Breadscrum';
 import './css/MovieDetail.css';
 
 const MovieDetail = () => {
@@ -28,6 +29,7 @@ const MovieDetail = () => {
 
   return (
     <div className="movie-detail-page bg-dark text-white">
+      <Breadscrumb />
       
       <div
         className="movie-banner"

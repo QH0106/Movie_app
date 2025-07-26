@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import movieAPI from '../services/movieAPI';
 import MovieCard from '../components/MovieCard';
+import Breadscrumb from '../components/Breadscrum';
 import './css/GenreMovies.css';
 
 const GenreMovies = () => {
@@ -63,6 +64,7 @@ const GenreMovies = () => {
 
   return (
     <div className="genre-page">
+      <Breadscrumb />
       <h2 className="genre-title">Phim {genreName}</h2>
       <div className="movies-grid">
         {movies.map((movie) => (

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -126,6 +126,7 @@ const Login = () => {
 
     return (
         <div className="login-container">
+            
             <div className="backgroundLogin"></div>
                 <div className="form-login">
                     <h2>Login</h2>

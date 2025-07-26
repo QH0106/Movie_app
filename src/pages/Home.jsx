@@ -1,17 +1,8 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import movieAPI from "../services/movieAPI";
 import MovieCard from "../components/MovieCard";
-import "./css/Home.css";
-
-// Helper function to chunk array
-const chunkArray = (arr, size) => {
-  const chunkedArr = [];
-  for (let i = 0; i < arr.length; i += size) {
-    chunkedArr.push(arr.slice(i, i + size));
-  }
-  return chunkedArr;
-};
+import "./css/Home.css"
 
 const Home = () => {
   const [featuredMovies, setFeaturedMovies] = useState([]);
@@ -76,7 +67,7 @@ const Home = () => {
   );
 
   return (
-    <div className="home-page">
+    <div className="home-page bg-dark">
       {/* Featured Slider */}
       <div id="featuredCarousel" className="carousel slide featured-slider" data-bs-ride="carousel">
         <div className="carousel-indicators">
@@ -126,7 +117,7 @@ const Home = () => {
       {genres.slice(0, 4).map(genre => (
         <div key={genre.id} className="movie-category">
           <div className="category-header">
-            <h2 className="category-title">Phim {genre.name}</h2>
+            <h2 className="category-title text-white">Phim {genre.name}</h2>
             <Link to={`/genre/${genre.id}`} className="view-all">
               Xem tất cả
             </Link>

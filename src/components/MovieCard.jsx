@@ -23,7 +23,6 @@ const MovieCard = ({ movie, className, IMAGE_BASE_URL }) => {
           </p>
         </div>
       </Link>
-        
     </div>
   );
 };

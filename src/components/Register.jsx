@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import Breadscrumb from './Breadscrum';
 import './css/Register.css';
 
 const Register = () => {
@@ -64,6 +65,7 @@ const Register = () => {
 
     return (
         <div className="register-container">
+            <Breadscrumb />
             <div className="backgroundRegister"></div>
             <div className="form-register">
                 <h2>Register</h2>
