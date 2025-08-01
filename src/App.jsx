@@ -32,14 +32,13 @@ const AppContent = () => {
       <Routes>
         <Route path="/Register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/" element={<Navbar />}>
+        <Route path="/" element={<> <Navbar /> <Footer /> </>} >
           <Route index element={<Home />} />
           <Route path="/Home" element={<Home />} />
           <Route path="movie/:id" element={<MovieDetail />} />
           <Route path="genre/:genreId" element={<GenreMovies />} />
         </Route>
       </Routes>
-      <Footer />
     </Router>
   );
 };
